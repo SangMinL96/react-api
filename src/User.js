@@ -11,10 +11,12 @@ async function getUsers(id) {
 
 function User({ id }) {
   const [state] = useAsync(() => getUsers(id), [id]);
-  const { loading, user, error } = state;
+  const { loading, data: user, error } = state;
+
   if (loading) return <div>로딩중...</div>;
   if (error) return <div>에러가 발생</div>;
   if (!user) return null;
+
   return (
     <div>
       <h2>{user.username}</h2>
