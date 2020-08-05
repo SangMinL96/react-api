@@ -1,24 +1,25 @@
 import { useReducer, useEffect } from "react";
+import axios from "axios";
 
 function reducer(state, action) {
   switch (action.type) {
     case "LOADING":
       return {
         loading: true,
-        users: null,
+        data: null,
         error: null,
       };
     case "SUCCESS":
       return {
         loading: false,
-        users: action.user,
+        data: action.data,
         error: null,
       };
 
     case "ERROR":
       return {
         loading: false,
-        users: null,
+        data: null,
         error: action.error,
       };
     default:
@@ -26,22 +27,25 @@ function reducer(state, action) {
   }
 }
 
-function useAsync(callback, deps = []) {
+function useAsync(URL, deps = [], skip = false) {
   const [state, dispatch] = useReducer(reducer, {
     loading: false,
-    users: null,
+    data: null,
     error: null,
   });
   const fatchData = async () => {
     dispatch({ type: "LOADING" });
     try {
-      const user = await callback();
-      dispatch({ type: "SUCCESS", user });
+      const response = await axios.get(URL);
+      dispatch({ type: "SUCCESS", data: response.data });
     } catch (e) {
       dispatch({ type: "ERROR", error: e });
     }
   };
   useEffect(() => {
+    if (skip) {
+      return;
+    }
     fatchData();
     //eslint-disable-next-line
   }, deps);

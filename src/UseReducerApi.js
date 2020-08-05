@@ -2,13 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import useAsync from "./useAsync";
 import User from "./User";
-
-async function getUsers() {
-  const response = await axios.get(
-    "https://jsonplaceholder.typicode.com/users"
-  );
-  return response.data;
-}
+const URL = "https://jsonplaceholder.typicode.com/users/";
 // function reducer(state, action) {
 //   switch (action.type) {
 //     case "LOADING":
@@ -61,23 +55,24 @@ function UseStateApi() {
   //   };
   //   fetchUsers();
   // }, []);
-  const [state, fatchData] = useAsync(getUsers, [], true);
+  const [state, fatchData] = useAsync(URL, [], true);
   const [userId, setUserId] = useState(null);
-  const { users, error, loading } = state;
+  const { data, error, loading } = state;
   if (loading) return <div>로딩중...</div>;
   if (error) return <div>에러가 발생</div>;
-  if (!users) return <button onClick={fatchData}>불러오기</button>;
+  if (!data) return <button onClick={fatchData}>불러오기</button>;
+  console.log(userId);
   return (
     <>
       <ul>
-        {users.map((user) => (
+        {data.map((user) => (
           <li key={user.id} onClick={() => setUserId(user.id)}>
             {user.username}({user.name})
           </li>
         ))}
       </ul>
       <button onClick={fatchData}>다시불러오기</button>
-      {userId && <User id={userId} />}
+      <div> {userId && <User id={userId} />}</div>
     </>
   );
 }
